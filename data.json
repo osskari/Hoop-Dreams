@@ -1,0 +1,64 @@
+{
+	"Players":
+	[
+		{
+			"_id": "5d9a2ba71c9d44000045a23a",
+			"name": "Oskar",
+			"playedGames": [
+				"5d9a3c971c9d440000fc50c0",
+				"5d9a3d451c9d440000fc50c2",
+				"5d9a3dc71c9d440000fc50c4"
+			]
+		},
+		{	
+			"_id": "5d9a2c0c1c9d44000045a23c",
+			"name": "Kristinn",
+			"playedGames": [
+				"5d9a3d451c9d440000fc50c2",
+				"5d9a3dc71c9d440000fc50c4"
+			]
+		},
+		{	
+			"_id": "5d9a2c511c9d44000045a23e",
+			"name": "Baldur",
+			"playedGames": [
+				"5d9a3c971c9d440000fc50c0",
+				"5d9a3dc71c9d440000fc50c4"
+			]
+		}
+	],
+	"PickupGames":
+	[
+		{
+			"start": "2015-09-09T00:25:43.311Z",
+			"end": "2015-09-09T02:25:43.311Z",
+			"location": "94ddb8d8-8324-4a65-8f9f-06d6146169f8",
+			"registeredPlayers": [
+				"5d9a2c511c9d44000045a23e",
+				"5d9a2ba71c9d44000045a23a"
+			],
+			"host": "5d9a2ba71c9d44000045a23a"
+		},
+		{
+			"start": "2017-06-09T17:13:09.149Z",
+			"end": "2017-06-09T19:13:09.149Z",
+			"location": "1798a72b-b619-4150-b604-5de20fa3cc56",
+			"registeredPlayers": [
+				"5d9a2ba71c9d44000045a23a",
+				"5d9a2c0c1c9d44000045a23c"
+			],
+			"host": "5d9a2c0c1c9d44000045a23c"
+		},
+		{
+			"start": "2014-03-20T23:33:33.397Z",
+			"end": "2014-03-21T01:33:33.397Z",
+			"location": "ef42039e-77bc-40a3-8121-c2a5424ebcdb",
+			"registeredPlayers": [
+				"5d9a2ba71c9d44000045a23a",
+				"5d9a2c0c1c9d44000045a23c",
+				"5d9a2c511c9d44000045a23e"
+			],
+			"host": "5d9a2c0c1c9d44000045a23c"
+		}
+	]
+}

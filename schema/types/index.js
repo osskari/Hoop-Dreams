@@ -1,6 +1,6 @@
-const player = require('./player');
-const pickupGame = require('./pickupGame');
-const basketballField = require('./basketballField');
+const player = require('./player').graphQl;
+const pickupGame = require('./pickupGame').graphQl;
+const basketballField = require('./basketballField').graphQl;
 
 module.exports = `
     ${player}
