@@ -1,6 +1,6 @@
 const requestPromise = require('request-promise');
 
-// const uri = `https://basketball-fields.herokuapp.com/api/basketball-fields/${id}` ? id : 'https://basketball-fields.herokuapp.com/api/basketball-fields';
+const connectionString = 'mongodb+srv://admin:admin123@hoops-aj2kw.mongodb.net/admin?retryWrites=true&w=majority'
 
 module.exports = {
     basketballFields: (id) => {
