@@ -4,7 +4,8 @@ const playerSchema = require('../schema/types/player').mongoDb;
 const pickupGameSchema = require('../schema/types/pickupGame').mongoDb;
 const playersInGamesSchema = require('../schema/types/playersInGames').mongoDb;
 
-const connectionString = 'mongodb+srv://admin:admin123@hoops-aj2kw.mongodb.net/admin?retryWrites=true&w=majority'
+const connectionString = 'mongodb+srv://admin:Admin12345@hoops-aj2kw.mongodb.net/admin?retryWrites=true&w=majority';
+const hebbo = 'mongodb+srv://hebbo:Hebbo1337@hoops-aj2kw.mongodb.net/admin?retryWrites=true&w=majority';
 const connection = mongoose.createConnection(connectionString, { useNewUrlParser: true });
 
 
@@ -20,7 +21,7 @@ module.exports = {
         json: true
     }
     )},
-    pickupGames: connection.model('PickupGames', pickupGameSchema),
-    players: connection.model('Players', playerSchema),
-    playersInGames: connection.model('PlayersInGames', playersInGamesSchema)
+    pickupGames: connection.model('PickupGame', pickupGameSchema, 'PickupGames'),
+    players: connection.model('Player', playerSchema, 'Players'),
+    playersInGames: connection.model('PlayersInGame', playersInGamesSchema, 'PlayersInGames')
 }
