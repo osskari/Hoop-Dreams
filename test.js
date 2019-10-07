@@ -1,6 +1,8 @@
-const db = require('./data/db').players;
+const {Player} = require('./data/db');
 
-db.find({}, (err, players) => {
+
+
+Player.find({}, (err, players) => {
     if (err) { throw new Error(err);}
-    players.forEach(i => console.log("hebbo: "+i));
+    console.log("Hebbo!!: ", players);
 })
