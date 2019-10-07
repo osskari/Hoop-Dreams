@@ -1,9 +1,17 @@
-const db = require('../data/db');
-
-console.log("hbbo");
-
-db.basketballFields('ef42039e-77bc-40a3-8121-c2a5424ebcdb').then(f => console.log(f)).catch((err) => {console.log(err)});
+const basketballFieldResolver = require('./basketballFieldResolvers');
+const pickupGameResolver = require('./pickupGameResolvers');
+const playerResolver = require('./playerResolvers');
+const scalar = require('../schema/scalar/index').scalar;
 
 module.exports = {
+    Query: {
+        ...playerResolver.queries,
+        ...pickupGameResolver.queries,
+        ...basketballFieldResolver.queries
+    },
+    Mutation: {
+        ...playerResolver.mutations,
+        ...pickupGameResolver.mutations
+    }
 
-}
+};
