@@ -5,9 +5,9 @@ module.exports = {
     graphQl:`
         type PickupGame {
             id: ID!
-            start: Moment!
-            end: Moment!
-            location: BasketBallField!
+            start: Boolean!
+            end: Boolean!
+            location: BasketballField!
             registeredPlayers: [Player!]!
             host: Player!
         }
