@@ -1,16 +1,29 @@
 const { GraphQLScalarType } = require('graphql');
 const moment = require('moment');
+const { isISO8601 } = require('validator');
 
 const Moment = new GraphQLScalarType({
     name: 'Moment',
     serialize(value) {
-        return moment(value).format('llll');
+        if(isISO8601(value)){
+            return moment(value).format('llll');
+        } else {
+            throw new Error('Date invalid');
+        }
     },
     parseValue(value) {
-        return value;
+        if(isISO8601(value)){
+            return moment(value).toISOString();
+        } else {
+            throw new Error('Date invalid');
+        }
     },
     parseLiteral(value) {
-        return value;
+        if(isISO8601(value)){
+            return moment(value).toISOString();
+        } else {
+            throw new Error('Date invalid');
+        }
     }
 });
 
