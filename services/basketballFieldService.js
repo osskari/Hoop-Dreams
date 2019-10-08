@@ -3,8 +3,7 @@ const errors = require('../errors');
 const Moment = require('moment');
 
 const BasketballFieldService = () => {
-    const getAllBasketballFields = async () => {
-        let arr = [];
+    const getAllBasketballFields = async (cb, errCb) => {
         try {
             await requestPromise({
                 uri: 'https://basketball-fields.herokuapp.com/api/basketball-fields',
@@ -12,25 +11,12 @@ const BasketballFieldService = () => {
                     'User-Agent': 'Request-Promise'
                 },
                 json: true
-            }).then(data => {
-                data.forEach(i => {
-                    arr.push({
-                        id: i.id,
-                        name: i.name,
-                        capacity: i.capacity,
-                        yearOfCreation: Moment(i.yearOfCreation).toISOString(),
-                        status: i.status
-                    });
-                });
-            });
-        } catch(err) {
-            throw new Error(err);
-        }
-        return arr;
+            }).then( data => cb(data) );
+        } catch(err) { errCb(err); }
     };
-    const getBasketballFieldById = async (id) => {
-        if(!id){ throw new errors.UserInputError("No id given"); }
-        let ret;
+
+    const getBasketballFieldById = async (id, cb, errCb) => {
+        if(!id){ errCb('No id given'); }
         try {
             await requestPromise({
                 uri: `https://basketball-fields.herokuapp.com/api/basketball-fields/${id}`,
@@ -38,22 +24,9 @@ const BasketballFieldService = () => {
                     'User-Agent': 'Request-Promise'
                 },
                 json: true
-            }).then( data => {
-                ret = {
-                    id: data.id,
-                    name: data.name,
-                    capacity: data.capacity,
-                    yearOfCreation: Moment(data.yearOfCreation).toISOString(),
-                    status: data.status,
-                };
-            });
-        } catch(err) {
-            if (err == 'StatusCodeError: 404 - "Basketball field was not with this id."'){
-                throw new errors.UserInputError(err);
-            }
-        }
-        return ret
-    }
+            }).then( data => cb(data) );
+        } catch(err) { errCb(err); }
+    };
 
     return {
         getAllBasketballFields,
@@ -65,21 +38,36 @@ module.exports = BasketballFieldService();
 
 // Examples
 
-// BasketballFieldService().getAllBasketballFields().then(data => {
-// //     Do stuff
-//     console.log(data);
-// })
-// .catch(err => {
-// //     Handle errors
-//     console.log(err)
-// });
+// BasketballFieldService().getAllBasketballFields(
+//     (data) => {
+//         let arr = [];
+//         data.forEach(i => {
+//             arr.push({
+//                 id: i.id,
+//                 name: i.name,
+//                 capacity: i.capacity,
+//                 yearOfCreation: Moment(i.yearOfCreation).toISOString(),
+//                 status: i.status
+//             });
+//         });
+//         console.log(arr);
+//         return arr;
+//     },
+//     (err) => {
+//         console.log(err)
+//     }
+// );
 
-// BasketballFieldService().getBasketballFieldById('647ffc67-265c-40a4-84c9-ccdcd2fdeac7')
-// .then(data => {
-// //     Do stuff
-//     console.log(data);
-// })
-// .catch(err => {
-// //     Handle errors
-//     console.log(err);
-// });
+// BasketballFieldService().getBasketballFieldById('647ffc67-265c-40a4-84c9-ccdcd2fdeac7', 
+//     (data) => {
+//         console.log(data);
+//         return {
+//             id: data.id,
+//             name: data.name,
+//             capacity: data.capacity,
+//             yearOfCreation: Moment(data.yearOfCreation).toISOString(),
+//             status: data.status
+//         };
+//     },
+//     (err) => { console.log(err); }
+// );
