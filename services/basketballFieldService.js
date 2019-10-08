@@ -1,4 +1,4 @@
-const { basketballFields } = require('../data/db');
+const requestPromise = require('request-promise');
 const errors = require('../errors');
 const Moment = require('moment');
 
@@ -6,7 +6,13 @@ const BasketballFieldService = () => {
     const getAllBasketballFields = async () => {
         let arr = [];
         try {
-            await basketballFields().then( data => {
+            await requestPromise({
+                uri: 'https://basketball-fields.herokuapp.com/api/basketball-fields',
+                headers: {
+                    'User-Agent': 'Request-Promise'
+                },
+                json: true
+            }).then(data => {
                 data.forEach(i => {
                     arr.push({
                         id: i.id,
@@ -22,12 +28,17 @@ const BasketballFieldService = () => {
         }
         return arr;
     };
-
     const getBasketballFieldById = async (id) => {
         if(!id){ throw new errors.UserInputError("No id given"); }
         let ret;
         try {
-            await basketballFields(id).then( data => {
+            await requestPromise({
+                uri: `https://basketball-fields.herokuapp.com/api/basketball-fields/${id}`,
+                headers: {
+                    'User-Agent': 'Request-Promise'
+                },
+                json: true
+            }).then( data => {
                 ret = {
                     id: data.id,
                     name: data.name,
@@ -36,7 +47,7 @@ const BasketballFieldService = () => {
                     status: data.status,
                 };
             });
-        } catch(err){
+        } catch(err) {
             if (err == 'StatusCodeError: 404 - "Basketball field was not with this id."'){
                 throw new errors.UserInputError(err);
             }
@@ -52,15 +63,23 @@ const BasketballFieldService = () => {
 
 module.exports = BasketballFieldService();
 
-// BasketballFieldService().getAllBasketballFields().then(data => {
-//     console.log(data);
-// });
+// Examples
 
-// BasketballFieldService().getBasketballFieldById()
-// .then(data => {
+// BasketballFieldService().getAllBasketballFields().then(data => {
+// //     Do stuff
 //     console.log(data);
 // })
 // .catch(err => {
-//     console.log(err);
+// //     Handle errors
+//     console.log(err)
 // });
 
+// BasketballFieldService().getBasketballFieldById('647ffc67-265c-40a4-84c9-ccdcd2fdeac7')
+// .then(data => {
+// //     Do stuff
+//     console.log(data);
+// })
+// .catch(err => {
+// //     Handle errors
+//     console.log(err);
+// });
