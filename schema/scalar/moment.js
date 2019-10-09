@@ -31,5 +31,7 @@ module.exports = {
     graphQl: `
         scalar Moment
     `,
-    Scalar: Moment
+    Scalar: {
+        Moment: Moment
+    }
 }

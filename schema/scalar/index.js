@@ -4,7 +4,7 @@ module.exports ={
     graphQl: `
         ${moment.graphQl}
     `,
-    scalar: {
-        moment: moment.scalar
+    resolve: {
+        Moment: moment.Scalar
     }
 } ;
