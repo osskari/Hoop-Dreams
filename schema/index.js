@@ -10,4 +10,7 @@ const scalar = require('./scalar');
 module.exports = gql`
     ${types}
     ${enums}
+    ${inputs}
+    ${queries}
+    ${mutations}
 `;
