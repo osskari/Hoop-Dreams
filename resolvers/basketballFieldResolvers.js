@@ -6,7 +6,6 @@ module.exports = {
             let arr = []
             await context.services.getAllBasketballFields(
                 (data) => {
-                    // let arr = [];
                     data.forEach(i => {
                         arr.push({
                             id: i.id,
@@ -17,18 +16,13 @@ module.exports = {
                             status: i.status
                         });
                     });
-                    console.log("yarr", arr);
-                    return arr;
-                    // arr = data;
                 },
                 (err) => {
                     console.log(err)
                 }
-            ).then( () => { console.log("then", arr); return []; });
-            // console.log("darr", arr);
-            // // console.log(a);
-            // return arr;
-            
+            );
+            Promise.resolve("Success");
+            return arr;
         },
         basketballField: (id) => ({})
     }
