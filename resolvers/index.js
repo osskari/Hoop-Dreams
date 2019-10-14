@@ -13,6 +13,8 @@ module.exports = {
     Mutation: {
         ...playerResolver.mutations,
         ...pickupGameResolver.mutations
-    }
+    },
+    ...playerResolver.types,
+    ...pickupGameResolver.types
 
 };

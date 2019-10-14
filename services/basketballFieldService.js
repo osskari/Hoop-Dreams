@@ -3,28 +3,28 @@ const errors = require('../errors');
 const Moment = require('moment');
 
 const BasketballFieldService = () => {
-    const getAllBasketballFields = async (cb, errCb) => {
+    const getAllBasketballFields = async (errCb) => {
         try {
-            await requestPromise({
+            return await requestPromise({
                 uri: 'https://basketball-fields.herokuapp.com/api/basketball-fields',
                 headers: {
                     'User-Agent': 'Request-Promise'
                 },
                 json: true
-            }).then( data => cb(data) );
+            });
         } catch(err) { errCb(err); }
     };
 
-    const getBasketballFieldById = async (id, cb, errCb) => {
-        if(!id){ errCb('No id given'); }
+    const getBasketballFieldById = async (id, errCb) => {
+        if(!id){ errCb('No id given'); return;}
         try {
-            await requestPromise({
+            return await requestPromise({
                 uri: `https://basketball-fields.herokuapp.com/api/basketball-fields/${id}`,
                 headers: {
                     'User-Agent': 'Request-Promise'
                 },
                 json: true
-            }).then( data => cb(data) );
+            });
         } catch(err) { errCb(err); }
     };
 
@@ -38,7 +38,7 @@ module.exports = BasketballFieldService();
 
 // Examples
 
-// BasketballFieldService().getAllBasketballFields(
+// console.log("Hebbo", BasketballFieldService().getAllBasketballFields(
 //     (data) => {
 //         let arr = [];
 //         data.forEach(i => {
@@ -50,13 +50,12 @@ module.exports = BasketballFieldService();
 //                 status: i.status
 //             });
 //         });
-//         console.log(arr);
 //         return arr;
 //     },
 //     (err) => {
 //         console.log(err)
 //     }
-// );
+// ));
 
 // BasketballFieldService().getBasketballFieldById('647ffc67-265c-40a4-84c9-ccdcd2fdeac7', 
 //     (data) => {
