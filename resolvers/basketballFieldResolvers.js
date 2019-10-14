@@ -3,27 +3,31 @@ const Moment = require('moment');
 module.exports = {
     queries: {
         allBasketballFields: async (root, args, context) => {
-            let arr = []
+            let arr = [];
             await context.services.getAllBasketballFields(
-                (data) => {
-                    data.forEach(i => {
-                        arr.push({
-                            id: i.id,
-                            name: i.name,
-                            capacity: i.capacity,
-                            yearOfCreation: Moment(i.yearOfCreation).toISOString(),
-                            pickupGames: [],
-                            status: i.status
-                        });
-                    });
-                },
                 (err) => {
                     console.log(err)
                 }
-            );
-            Promise.resolve("Success");
+            ).then(data => {
+                data.forEach(i => {
+                    arr.push({
+                        id: i.id,
+                        name: i.name,
+                        capacity: i.capacity,
+                        yearOfCreation: i.yearOfCreation,
+                        pickupGames: [],
+                        status: i.status
+                    });
+                });
+            });
             return arr;
         },
-        basketballField: (id) => ({})
+        basketballField: async (root, args, context) => {
+            let field;
+            await context.services.getBasketballFieldById(args.id,
+                (err) => { console.log(err); }
+            ).then( data => { field = data; });
+            return field;
+        }
     }
 }
