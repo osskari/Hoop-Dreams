@@ -29,7 +29,12 @@ module.exports = {
     types: {
         Player: {
             playedGames: parent => {
-                console.log(parent.id);
+                // PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
+                //     if (err) { console.log("dsd"); }
+                //     return connection.map(c => PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
+                //         if (err) { console.log("sad"); }
+                //     }));
+                // });
             }
         }
     }
