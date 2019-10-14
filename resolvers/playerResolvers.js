@@ -29,13 +29,16 @@ module.exports = {
     types: {
         Player: {
             playedGames: parent => {
-                // PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
-                //     if (err) { console.log("dsd"); }
-                //     return connection.map(c => PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
-                //         if (err) { console.log("sad"); }
-                //     }));
-                // });
-            }
+                var ping = [];
+                return PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
+                    if (err) { console.log("dsd"); }
+                    connection.map(c => PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
+                        if (err) { console.log("sad"); }
+                        ping.push(pickupGame);
+                    }));
+                    return ping;
+                });
+           }
         }
     }
 }
