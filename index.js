@@ -8,4 +8,4 @@ const server = new ApolloServer({
 });
 
 server.listen()
-    .then(({ url }) => console.log(`GraphQL Service is running on ${ url }`));
+    .then(({ url }) => console.log(`GraphQL Service is running on ${url}`));

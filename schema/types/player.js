@@ -1,4 +1,4 @@
-const {Schema} = require('mongoose');
+const { Schema } = require('mongoose');
 
 module.exports = {
     graphQl: `
@@ -9,6 +9,6 @@ module.exports = {
         }
     `,
     mongoDb: new Schema({
-        name: {type: String, required: true},
+        name: { type: String, required: true },
     })
 };
