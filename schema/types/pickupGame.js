@@ -13,9 +13,9 @@ module.exports = {
         }
     `,
     mongoDb: new Schema({
-        start: {type: Date, required: true},
-        end: {type: Date, required: true},
-        location: {type: Schema.Types.ObjectId, required: true},
+        start: {type: String, required: true},
+        end: {type: String, required: true},
+        location: {type: String, required: true},
         host: {type: Schema.Types.ObjectId, required: true}
     })
 }

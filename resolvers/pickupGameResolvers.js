@@ -1,71 +1,52 @@
-const { PickupGame, Player } = require("../data/db");
+const { PickupGame, Player, PlayersInGame } = require("../data/db");
 const BasketballFieldService = require("../services/basketballFieldService");
-const Moment = require("moment");
+const moment = require('moment');
 
 module.exports = {
     queries: {
-        allPickupGames: () => {
-            return PickupGame.find({}, (err, pickupGames) => {
-                if (err) {console.log(err)}
-            });
-        },
-        pickupGame: (parent, args) => {
-            return PickupGame.findById(args.id, (err, pickupGame) => {
-                if (err) { return err }
-            });
-        }
+        allPickupGames: () => PickupGame.find({}).then(pickupGames => pickupGames).catch(err => err),
+        pickupGame: (parent, args) => PickupGame.findById(args.id).then(pickupGame => pickupGame).catch(err => err)
     },
     mutations: {
-        createPickupGame: (parent, pickupGame) => {;
-        //    Player.findById(pickupGame.hostId, (err, player) => {
-        //         if(err) {console.log("Player ", err)}
-        //         else {
-        //             console.log("Player found");
-        //             field = BasketballFieldService.getBasketballFieldById(
-        //                 pickupGame.basketballFieldId, 
-        //                 (err) => {console.log("basketball ", err)}
-        //             ).then(data => {
-        //                 console.log("basketballfield found");
-                        
-        //             });
-        //         }
-        //     });
-            PickupGame.create({
-                start: pickupGame.start,
-                end: pickupGame.end,
-                location: pickupGame.basketballFieldId,
-                host: pickupGame.hostId
-            }, (err, pickupGame) => {
-                if(err) {console.log(err)}
-            })
-        },
-        removePickupGame: (parent, id) => ({}),
-        addPlayerToPickupGame: (parent, player) => ({}),
-        removePlayerFromPickupGame: (parent, id) => ({})
+        // Creates a pickup game and returns the created pickup game
+        createPickupGame: (parent, pickupGame) =>  PickupGame.create({
+                start: moment(pickupGame.input.start).toISOString(),
+                end: moment(pickupGame.input.end).toISOString(),
+                location: pickupGame.input.basketballFieldId,
+                host: pickupGame.input.hostId})
+            .then(data => data)
+            .catch(err => err),
+        // Removes a pickup game aftre id
+        removePickupGame: (parent, id) => PickupGame.deleteOne({ _id : id}).then(() => 
+            PlayersInGame.deleteMany({"pickupGameId": id}).then(() => true).catch(err => err)
+        ).catch(err => err),
+        // adds a new player to a specified pickup game
+        addPlayerToPickupGame: (parent, connection) => PickupGame.findById(connection.input.pickupGameId).then( pickupGame =>
+            PlayersInGame.create({ 
+                "playerId": connection.input.playerId, 
+                "pickupGameId": connection.input.pickupGameId 
+            }).then(() => pickupGame)
+            .catch((err) => err)
+        ).catch(err => err),
+        removePlayerFromPickupGame: (parent, connection) => PickupGame.findById(connection.input.pickupGameId).then( pickupGame =>
+            PlayersInGame.deleteOne({
+                "playerId": connection.input.playerId,
+                "pickupGameId": connection.input.pickupGameId
+            }).then(() => true)
+            .catch(err => err)
+        ).catch(err => err)
     },
     types: {
         PickupGame : {
-            registeredPlayers(parent) {
-                return Player.find({}, (err, players) => {
-                    if(err) {console.log("Player error: ",err)};
-                    return players;
-                });
-            },
-            location(parent) {
-                return BasketballFieldService.getAllBasketballFields(
-                    (err) => {console.log("basketball ", err)}).then(data => data[0]);
-            },
-            host(parent) {
-                return Player.findById(parent.host, (err, player) => {
-                    if(err) {console.log(err);}
-                })
-            },
-            start(parent) {
-                return Moment(parent.start).format('llll');
-            },
-            end(parent) {
-                return Moment(parent.end).format('llll');
-            }
+            // going through all players in game and returning them as an list
+            registeredPlayers: parent => PlayersInGame.find({'pickupGameId': parent.id})
+                .then(ping => ping.map(
+                    p => Player.findById(p.playerId).then(player => player).catch(err => err)
+                )).catch(err => err),
+            // location holds the id of the basketball field stored in a heroku api
+            location: parent =>  BasketballFieldService.getBasketballFieldById(parent.location, (err) => err).then(data => data),
+            // Finding the host of the game
+            host: parent =>  Player.findById(parent.host).then(data => data).catch(err => err)
         }
     }
 }
