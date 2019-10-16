@@ -6,7 +6,7 @@ module.exports = {
     queries: {
         allPickupGames: () => {
             return PickupGame.find({}, (err, pickupGames) => {
-                if (err) {console.log(err)}
+                if (err) { console.log(err) }
             });
         },
         pickupGame: (parent, args) => {
@@ -16,27 +16,28 @@ module.exports = {
         }
     },
     mutations: {
-        createPickupGame: (parent, pickupGame) => {;
-        //    Player.findById(pickupGame.hostId, (err, player) => {
-        //         if(err) {console.log("Player ", err)}
-        //         else {
-        //             console.log("Player found");
-        //             field = BasketballFieldService.getBasketballFieldById(
-        //                 pickupGame.basketballFieldId, 
-        //                 (err) => {console.log("basketball ", err)}
-        //             ).then(data => {
-        //                 console.log("basketballfield found");
-                        
-        //             });
-        //         }
-        //     });
+        createPickupGame: (parent, pickupGame) => {
+            ;
+            //    Player.findById(pickupGame.hostId, (err, player) => {
+            //         if(err) {console.log("Player ", err)}
+            //         else {
+            //             console.log("Player found");
+            //             field = BasketballFieldService.getBasketballFieldById(
+            //                 pickupGame.basketballFieldId, 
+            //                 (err) => {console.log("basketball ", err)}
+            //             ).then(data => {
+            //                 console.log("basketballfield found");
+
+            //             });
+            //         }
+            //     });
             PickupGame.create({
                 start: pickupGame.start,
                 end: pickupGame.end,
                 location: pickupGame.basketballFieldId,
                 host: pickupGame.hostId
             }, (err, pickupGame) => {
-                if(err) {console.log(err)}
+                if (err) { console.log(err) }
             })
         },
         removePickupGame: (parent, id) => ({}),
@@ -44,20 +45,20 @@ module.exports = {
         removePlayerFromPickupGame: (parent, id) => ({})
     },
     types: {
-        PickupGame : {
+        PickupGame: {
             registeredPlayers(parent) {
                 return Player.find({}, (err, players) => {
-                    if(err) {console.log("Player error: ",err)};
+                    if (err) { console.log("Player error: ", err) };
                     return players;
                 });
             },
             location(parent) {
                 return BasketballFieldService.getAllBasketballFields(
-                    (err) => {console.log("basketball ", err)}).then(data => data[0]);
+                    (err) => { console.log("basketball ", err) }).then(data => data[0]);
             },
             host(parent) {
                 return Player.findById(parent.host, (err, player) => {
-                    if(err) {console.log(err);}
+                    if (err) { console.log(err); }
                 })
             },
             start(parent) {

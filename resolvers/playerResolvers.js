@@ -21,19 +21,31 @@ module.exports = {
                     }
                 });
                 if (error) {
+                    //If error has been set, return NotFoundError
                     return new NotFoundError();
                 } else {
+                    //If error var was not set, return the found player
                     return playerFound;
                 }
             } else {
+                //Return NotFoundError if the given id is not valid
                 return new NotFoundError();
             }
         }
     },
     mutations: {
-        createPlayer: (player) => ({}),
-        updatePlayer: (id, player) => ({}),
-        removePlayer: (id) => ({})
+        createPlayer: (parent, args, context, info) => {
+            return Player.create({
+                name: args.input.name
+            }).then(data => data).catch(err => err);
+        },
+        updatePlayer: (parent, args, context, info) => {
+            return Player.update(
+                { "_id": args.id },
+                { name: args.input.name }
+            ).then(() => Player.findById(args.id).then(data => data).catch(err => err)).catch(err => err);
+        },
+        removePlayer: (parent, args, context, info) => ({})
     },
     types: {
         Player: {
