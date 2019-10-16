@@ -34,10 +34,10 @@ module.exports = {
     },
     types: {
         Player: {
-            playedGames: (parent, args, context, info) => {
+            playedGames: (root, args, context, info) => {
                 //ping = peopleInGame
                 var ping = [];
-                return context.db.PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
+                return context.db.PlayersInGame.find({ playerId: root.id }, (err, connection) => {
                     if (err) { return; /*TODO?*/ }
                     connection.map(c => context.db.PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
                         if (err) { return; /*TODO?*/ }
