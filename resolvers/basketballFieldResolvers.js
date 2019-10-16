@@ -3,9 +3,7 @@ module.exports = {
         allBasketballFields: async (root, args, context) => {
             let arr = [];
             await context.services.getAllBasketballFields(
-                (err) => {
-                    console.log(err)
-                }
+                (err) => { console.log(err); }
             ).then(data => { arr = data; });
             return arr;
         },
@@ -20,7 +18,6 @@ module.exports = {
     types: {
         BasketballField: {
             pickupGames(root, args, context, info) {
-                console.log("id", root.id);
                 return context.db.PickupGame.find({location: root.id}, (err, games) => {
                     if (err) { console.log(err); }
                     return games;

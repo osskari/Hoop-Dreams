@@ -1,16 +1,14 @@
 const { PickupGame, Player, PlayersInGame } = require('../data/db');
 const { NotFoundError } = require('../errors.js');
 const mongodb = require("mongodb");
-//Finds and return all players in the database
-const allPlayers = Player.find({}, (err, players) => {
-    if (err) { throw new Error(err); }
-    return players;
-})
 
 module.exports = {
     queries: {
-        allPlayers: () => allPlayers,
-        player: async (parent, args) => {
+        allPlayers: (root, args, context, info) => context.db.Player.find({}, (err, players) => {
+            if (err) { throw new Error(err); }
+            return players;
+        }),
+        player: async (root, args, context, info) => {
             var error = false;
             //Checking if its a valid mongoDB id
             if (mongodb.ObjectID.isValid(args.id)) {
