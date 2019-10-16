@@ -1,17 +1,13 @@
-const { PickupGame, Player } = require("../data/db");
-const BasketballFieldService = require("../services/basketballFieldService");
-const Moment = require("moment");
-
 module.exports = {
     queries: {
-        allPickupGames: () => {
-            return PickupGame.find({}, (err, pickupGames) => {
-                if (err) {console.log(err)}
+        allPickupGames: (root, args, context, info) => {
+            return context.db.PickupGame.find({}, (err, pickupGames) => {
+                if (err) { console.log(err); }
             });
         },
-        pickupGame: (parent, args) => {
-            return PickupGame.findById(args.id, (err, pickupGame) => {
-                if (err) { return err }
+        pickupGame: (root, args, context, info) => {
+            return context.db.PickupGame.findById(args.id, (err, pickupGame) => {
+                if (err) { return err; }
             });
         }
     },
@@ -30,7 +26,7 @@ module.exports = {
         //             });
         //         }
         //     });
-            PickupGame.create({
+            context.db.PickupGame.create({
                 start: pickupGame.start,
                 end: pickupGame.end,
                 location: pickupGame.basketballFieldId,
@@ -45,26 +41,20 @@ module.exports = {
     },
     types: {
         PickupGame : {
-            registeredPlayers(parent) {
-                return Player.find({}, (err, players) => {
+            registeredPlayers(root, args, context, info) {
+                return context.db.Player.find({}, (err, players) => {
                     if(err) {console.log("Player error: ",err)};
                     return players;
                 });
             },
-            location(parent) {
-                return BasketballFieldService.getAllBasketballFields(
+            location(root, args, context, info) {
+                return context.db.BasketballFieldService.getAllBasketballFields(
                     (err) => {console.log("basketball ", err)}).then(data => data[0]);
             },
-            host(parent) {
-                return Player.findById(parent.host, (err, player) => {
+            host(root, args, context, info) {
+                return context.db.Player.findById(root.host, (err, player) => {
                     if(err) {console.log(err);}
-                })
-            },
-            start(parent) {
-                return Moment(parent.start).format('llll');
-            },
-            end(parent) {
-                return Moment(parent.end).format('llll');
+                });
             }
         }
     }

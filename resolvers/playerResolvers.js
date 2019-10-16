@@ -1,4 +1,3 @@
-const { PickupGame, Player, PlayersInGame } = require('../data/db');
 const { NotFoundError } = require('../errors.js');
 const mongodb = require("mongodb");
 
@@ -12,8 +11,8 @@ module.exports = {
             var error = false;
             //Checking if its a valid mongoDB id
             if (mongodb.ObjectID.isValid(args.id)) {
-                const playerFound = await Player.findById({ _id: args.id }, (err, player) => {
-                    if (player == null) {
+                const playerFound = await context.db.Player.findById({ _id: args.id }, (err, player) => {
+                    if (player == null || err != null) {
                         //If player is not found set error to true, and return a NotFoundError()
                         error = true;
                     }
@@ -35,12 +34,12 @@ module.exports = {
     },
     types: {
         Player: {
-            playedGames: parent => {
+            playedGames: (parent, args, context, info) => {
                 //ping = peopleInGame
                 var ping = [];
-                return PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
+                return context.db.PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
                     if (err) { return; /*TODO?*/ }
-                    connection.map(c => PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
+                    connection.map(c => context.db.PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
                         if (err) { return; /*TODO?*/ }
                         ping.push(pickupGame);
                     }));
