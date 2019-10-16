@@ -1,5 +1,6 @@
 const { PickupGame, Player, PlayersInGame } = require('../data/db');
 const { NotFoundError } = require('../errors.js');
+const mongodb = require("mongodb");
 //Finds and return all players in the database
 const allPlayers = Player.find({}, (err, players) => {
     if (err) { throw new Error(err); }
@@ -9,15 +10,23 @@ const allPlayers = Player.find({}, (err, players) => {
 module.exports = {
     queries: {
         allPlayers: () => allPlayers,
-        player: (parent, args) => {
-            var error = null;
-            const playerFound = Player.findById({ _id: args.id }, (err, player) => {
-                if (err) { error = new NotFoundError() }
-            });
-            if (error == null) {
-                return playerFound;
+        player: async (parent, args) => {
+            var error = false;
+            //Checking if its a valid mongoDB id
+            if (mongodb.ObjectID.isValid(args.id)) {
+                const playerFound = await Player.findById({ _id: args.id }, (err, player) => {
+                    if (player == null) {
+                        //If player is not found set error to true, and return a NotFoundError()
+                        error = true;
+                    }
+                });
+                if (error) {
+                    return new NotFoundError();
+                } else {
+                    return playerFound;
+                }
             } else {
-                return error;
+                return new NotFoundError();
             }
         }
     },
@@ -29,16 +38,17 @@ module.exports = {
     types: {
         Player: {
             playedGames: parent => {
+                //ping = peopleInGame
                 var ping = [];
                 return PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
-                    if (err) { console.log("dsd"); }
+                    if (err) { return; /*TODO?*/ }
                     connection.map(c => PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
-                        if (err) { console.log("sad"); }
+                        if (err) { return; /*TODO?*/ }
                         ping.push(pickupGame);
                     }));
                     return ping;
                 });
-           }
+            }
         }
     }
 }
