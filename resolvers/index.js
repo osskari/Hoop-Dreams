@@ -15,6 +15,6 @@ module.exports = {
         ...pickupGameResolver.mutations
     },
     ...playerResolver.types,
-    ...pickupGameResolver.types
-
+    ...pickupGameResolver.types,
+    ...basketballFieldResolver.types
 };
