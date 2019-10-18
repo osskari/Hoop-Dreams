@@ -13,14 +13,14 @@ const Moment = new GraphQLScalarType({
     },
     parseValue(value) {
         if(isISO8601(value)){
-            return moment(value).toISOString();
+            return value;
         } else {
             throw new Error('Date invalid');
         }
     },
     parseLiteral(value) {
         if(isISO8601(value)){
-            return moment(value).toISOString();
+            return value;
         } else {
             throw new Error('Date invalid');
         }

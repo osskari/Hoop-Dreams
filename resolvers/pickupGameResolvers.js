@@ -1,25 +1,22 @@
-const { PickupGame, Player, PlayersInGame } = require("../data/db");
+
 const { PickupGameAlreadyPassedError , PlayerAlreadyRegistered, PickupGameOverlapError} = require('../errors');
-const BasketballFieldService = require("../services/basketballFieldService");
-const moment = require('moment');
 
 module.exports = {
     queries: {
-        // Returns all pickup games
-        allPickupGames: (parent, args, context, info) => context.db.PickupGame.find({}).then(pickupGames => pickupGames).catch(err => err),
-        // Returns a specific pickup game by id
-        pickupGame: (parent, input, context, info) => context.db.PickupGame.findById(input.id).then(pickupGame => pickupGame).catch(err => err)
+        allPickupGames: (root, args, context, info) => context.db.PickupGame.find({}).then(pickupGames => pickupGames).catch(err => err),
+        pickupGame: (root, args, context, info) => context.db.PickupGame.findById(args.id).then(pickupGame => pickupGame).catch(err => err)
     },
     mutations: {
         // Creates a pickup game and returns the created pickup game
-        createPickupGame: (parent, pickupGame, context, info) =>  context.db.PickupGame.create({
-                start: moment(pickupGame.input.start).toISOString(),
-                end: moment(pickupGame.input.end).toISOString(),
-                location: pickupGame.input.basketballFieldId,
-                host: pickupGame.input.hostId})
+        createPickupGame: (root, args, context, info) =>  context.db.PickupGame.create({
+                start: moment(args.input.start).toISOString(),
+                end: moment(args.input.end).toISOString(),
+                location: args.input.basketballFieldId,
+                host: args.input.hostId
+            })
             .then(data => data)
             .catch(err => err),
-        // Removes a pickup game aftre id
+        // Removes a pickup game by id
         removePickupGame: (parent, id, context, info) => context.db.PickupGame.deleteOne({ "_id" : id}).then(() => 
             context.db.PlayersInGame.deleteMany({"pickupGameId": id}).then(() => true).catch(err => err)
         ).catch(err => err),
@@ -87,14 +84,14 @@ module.exports = {
     types: {
         PickupGame : {
             // going through all players in game and returning them as an list
-            registeredPlayers: (parent, args, context, info) => context.db.PlayersInGame.find({'pickupGameId': parent.id})
+            registeredPlayers: (root, args, context, info) => context.db.PlayersInGame.find({'pickupGameId': root.id})
                 .then(ping => ping.map(
                     p => context.db.Player.findById(p.playerId).then(player => player).catch(err => err)
                 )).catch(err => err),
             // location holds the id of the basketball field stored in a heroku api
             location: (parent, args, context, info) => context.services.getBasketballFieldById(parent.location, (err) => err).then(data => data),
             // Finding the host of the game
-            host: (parent, args, context, info) =>  context.db.Player.findById(parent.host).then(data => data).catch(err => err)
+            host: (root, args, context, info) =>  context.db.Player.findById(root.host).then(data => data).catch(err => err)
         }
     }
 }

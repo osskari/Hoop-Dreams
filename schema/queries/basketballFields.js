@@ -1,4 +1,4 @@
 module.exports = `
-    allBasketballFields: [BasketballField!]!
+    allBasketballFields(status: BasketballFieldStatus): [BasketballField!]!
     basketballField(id: String!): BasketballField!
 `;
