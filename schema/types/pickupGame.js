@@ -2,7 +2,7 @@ const Schema = require('mongoose').Schema;
 
 
 module.exports = {
-    graphQl:`
+    graphQl: `
         type PickupGame {
             id: ID!
             start: Moment!
@@ -13,9 +13,10 @@ module.exports = {
         }
     `,
     mongoDb: new Schema({
-        start: {type: Date, required: true},
-        end: {type: Date, required: true},
-        location: {type: String, required: true},
-        host: {type: Schema.Types.ObjectId, required: true}
+        start: { type: Date, required: true },
+        end: { type: Date, required: true },
+        location: { type: String, required: true },
+        host: { type: Schema.Types.ObjectId, required: true },
+        deleted: { type: Boolean, default: false }
     })
 }
