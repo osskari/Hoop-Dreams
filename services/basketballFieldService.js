@@ -3,8 +3,7 @@ const errors = require('../errors');
 const Moment = require('moment');
 
 const BasketballFieldService = () => {
-    const getAllBasketballFields = async (errCb) => {
-        try {
+    const getAllBasketballFields = async () => {
             return await requestPromise({
                 uri: 'https://basketball-fields.herokuapp.com/api/basketball-fields',
                 headers: {
@@ -12,20 +11,17 @@ const BasketballFieldService = () => {
                 },
                 json: true
             });
-        } catch(err) { errCb(err); }
     };
 
     const getBasketballFieldById = async (id, errCb) => {
-        if(!id){ errCb('No id given'); return;}
-        try {
-            return await requestPromise({
-                uri: `https://basketball-fields.herokuapp.com/api/basketball-fields/${id}`,
-                headers: {
-                    'User-Agent': 'Request-Promise'
-                },
-                json: true
-            });
-        } catch(err) { errCb(err); }
+        if(!id){ throw new Err}
+        return await requestPromise({
+            uri: `https://basketball-fields.herokuapp.com/api/basketball-fields/${id}`,
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            json: true
+        });
     };
 
     return {

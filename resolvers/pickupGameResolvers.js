@@ -73,13 +73,15 @@ module.exports = {
             .catch(err => err);
         },
         // Removes a player connection to a pickup game
-        removePlayerFromPickupGame: (parent, connection, context, info) => context.db.PickupGame.findById(connection.input.pickupGameId).then( pickupGame =>
-            context.db.PlayersInGame.deleteOne({
-                "playerId": connection.input.playerId,
-                "pickupGameId": connection.input.pickupGameId
-            }).then(() => true)
-            .catch(err => err)
-        ).catch(err => err)
+        removePlayerFromPickupGame: (parent, connection, context, info) => {
+            return context.db.PickupGame.findById(connection.input.pickupGameId).then( pickupGame =>
+                context.db.PlayersInGame.deleteOne({
+                    "playerId": connection.input.playerId,
+                    "pickupGameId": connection.input.pickupGameId
+                }).then(() => true)
+                .catch(err => err)
+            ).catch(err => err)
+        }
     },
     types: {
         PickupGame : {
