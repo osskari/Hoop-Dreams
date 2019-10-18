@@ -1,11 +1,14 @@
 const { PickupGame, Player, PlayersInGame } = require("../data/db");
+const { PickupGameAlreadyPassedError , PlayerAlreadyRegistered, PickupGameOverlapError} = require('../errors');
 const BasketballFieldService = require("../services/basketballFieldService");
 const moment = require('moment');
 
 module.exports = {
     queries: {
+        // Returns all pickup games
         allPickupGames: () => PickupGame.find({}).then(pickupGames => pickupGames).catch(err => err),
-        pickupGame: (parent, args) => PickupGame.findById(args.id).then(pickupGame => pickupGame).catch(err => err)
+        // Returns a specific pickup game by id
+        pickupGame: (parent, input) => PickupGame.findById(input.id).then(pickupGame => pickupGame).catch(err => err)
     },
     mutations: {
         // Creates a pickup game and returns the created pickup game
@@ -17,17 +20,61 @@ module.exports = {
             .then(data => data)
             .catch(err => err),
         // Removes a pickup game aftre id
-        removePickupGame: (parent, id, context, info) => context.db.PickupGame.deleteOne({ _id : id}).then(() => 
+        removePickupGame: (parent, id, context, info) => context.db.PickupGame.deleteOne({ "_id" : id}).then(() => 
             context.db.PlayersInGame.deleteMany({"pickupGameId": id}).then(() => true).catch(err => err)
         ).catch(err => err),
         // adds a new player to a specified pickup game
-        addPlayerToPickupGame: (parent, connection, context, info) => context.db.PickupGame.findById(connection.input.pickupGameId).then( pickupGame =>
-            context.db.PlayersInGame.create({ 
-                "playerId": connection.input.playerId, 
-                "pickupGameId": connection.input.pickupGameId 
-            }).then(() => pickupGame)
-            .catch((err) => err)
-        ).catch(err => err),
+        addPlayerToPickupGame: (parent, connection, context, info) => 
+            context.db.PickupGame.findById(connection.input.pickupGameId)
+                .then( pickupGame => {
+                    return context.db.Player.findById(connection.input.playerId)
+                    .then(player => {
+                        if(pickupGame.end > new moment()) {
+                            return new PickupGameAlreadyPassedError();
+                        }
+                        return context.services.getBasketballFieldById(pickupGame.location)
+                        .then(loc => {
+                            return context.db.PlayersInGame.find({'pickupGameId': connection.input.pickupGameId})
+                            .then(pingForGame => {
+                                if ( pingForGame.filter(ping => ping.playerId == player.id).length != 0 ) {
+                                    return new PlayerAlreadyRegistered();
+                                }
+                                if (loc.capacity == pingForGame.length) {
+                                    return new PickupGameAlreadyPassedError();
+                                }
+                                return context.db.PlayersInGame.find({'playerId': connection.input.playerId})
+                                .then(pingForPlayer => {
+                                    return context.db.PickupGame.find({})
+                                    .then(pickupGames => {
+                                        pgids = pingForGame.map(pingfg => pingfg.playerId);
+                                        pickupGames = pickupGames.filter(pg => pgids.includes(pg.id));
+                                        for(var i = 0; i < pickupGames.length; i++) {
+                                            if(pickupGame.start > pickupGames[i].start > pickupGame.end) {
+                                                return new PickupGameOverlapError();
+                                            }
+                                            if(pickupGames[i].start > pickupGame.start > pickupGames[i].end) {
+                                                return new PickupGameOverlapError();
+                                            }
+                                        }
+                                        return context.db.PlayersInGame.create({
+                                            'playerId': connection.input.playerId,
+                                            'pickupGameId': connection.input.pickupGameId
+                                        })
+                                        .then(() => pickupGame)
+                                        .catch(err => err);
+                                    })
+                                    .catch(err => err);
+                                })
+                                .catch(err => err);
+                            })
+                            .catch(err => err);
+                        })
+                        .catch(err => err);
+                    })
+                    .catch(err => err);
+                })
+                .catch(err => err),
+        // Removes a player connection to a pickup game
         removePlayerFromPickupGame: (parent, connection, context, info) => context.db.PickupGame.findById(connection.input.pickupGameId).then( pickupGame =>
             context.db.PlayersInGame.deleteOne({
                 "playerId": connection.input.playerId,
@@ -44,7 +91,7 @@ module.exports = {
                     p => context.db.Player.findById(p.playerId).then(player => player).catch(err => err)
                 )).catch(err => err),
             // location holds the id of the basketball field stored in a heroku api
-            location: (parent, args, context, info) =>  context.service.BasketballFieldService.getBasketballFieldById(parent.location, (err) => err).then(data => data),
+            location: (parent, args, context, info) => context.services.getBasketballFieldById(parent.location, (err) => err).then(data => data),
             // Finding the host of the game
             host: (parent, args, context, info) =>  context.db.Player.findById(parent.host).then(data => data).catch(err => err)
         }

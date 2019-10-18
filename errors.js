@@ -40,11 +40,20 @@ class NotFoundError extends ApolloError {
     }
 }
 
+class PlayerAlreadyRegistered extends ApolloError {
+    constructor(message = 'Player id already registered for specified game') {
+        super(null, null, message);
+        this.name = 'PlayerAlreadyRegistered';
+        this.code = 400;
+    }
+}
+
 module.exports = {
     PickupGameExceedMaximumError,
     BasketballFieldClosedError,
     PickupGameOverlapError,
     PickupGameAlreadyPassedError,
     NotFoundError,
-    UserInputError
+    UserInputError,
+    PlayerAlreadyRegistered
 };
