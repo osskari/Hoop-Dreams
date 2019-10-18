@@ -40,6 +40,14 @@ class NotFoundError extends ApolloError {
     }
 }
 
+class InvalidObjectIdError extends ApolloError {
+    constructor(message = 'Provided Id is not a valid mongodb object id') {
+        super(message, null, null);
+        this.name = 'Mongodb Object Id error';
+        this.code = 400;
+    }
+}
+      
 class PlayerAlreadyRegistered extends ApolloError {
     constructor(message = 'Player id already registered for specified game') {
         super(null, null, message);
@@ -55,5 +63,6 @@ module.exports = {
     PickupGameAlreadyPassedError,
     NotFoundError,
     UserInputError,
+    InvalidObjectIdError,
     PlayerAlreadyRegistered
 };

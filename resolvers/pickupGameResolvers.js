@@ -82,6 +82,7 @@ module.exports = {
         ).catch(err => err)
     },
     types: {
+
         PickupGame : {
             // going through all players in game and returning them as an list
             registeredPlayers: (root, args, context, info) => context.db.PlayersInGame.find({'pickupGameId': root.id})
