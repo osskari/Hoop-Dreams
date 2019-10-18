@@ -47,12 +47,11 @@ class InvalidObjectIdError extends ApolloError {
         this.code = 400;
     }
 }
-      
+
 class PlayerAlreadyRegistered extends ApolloError {
     constructor(message = 'Player id already registered for specified game') {
-        super(null, null, message);
+        super(message, 400, null);
         this.name = 'PlayerAlreadyRegistered';
-        this.code = 400;
     }
 }
 

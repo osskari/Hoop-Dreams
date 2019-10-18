@@ -4,17 +4,18 @@ const Moment = require('moment');
 
 const BasketballFieldService = () => {
     const getAllBasketballFields = async () => {
-            return await requestPromise({
-                uri: 'https://basketball-fields.herokuapp.com/api/basketball-fields',
-                headers: {
-                    'User-Agent': 'Request-Promise'
-                },
-                json: true
-            });
+        return await requestPromise({
+            uri: 'https://basketball-fields.herokuapp.com/api/basketball-fields',
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            json: true
+        });
     };
 
-    const getBasketballFieldById = async (id, errCb) => {
-        if(!id){ throw new Err}
+    const getBasketballFieldById = async (id) => {
+
+        if (!id) { throw new Error("No id given") }
         return await requestPromise({
             uri: `https://basketball-fields.herokuapp.com/api/basketball-fields/${id}`,
             headers: {

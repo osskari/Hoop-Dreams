@@ -1,6 +1,5 @@
 {
-	"Players":
-	[
+	"Players": [
 		{
 			"_id": "5d9a2ba71c9d44000045a23a",
 			"name": "Oskar",
@@ -10,7 +9,7 @@
 				"5d9a3dc71c9d440000fc50c4"
 			]
 		},
-		{	
+		{
 			"_id": "5d9a2c0c1c9d44000045a23c",
 			"name": "Kristinn",
 			"playedGames": [
@@ -18,7 +17,7 @@
 				"5d9a3dc71c9d440000fc50c4"
 			]
 		},
-		{	
+		{
 			"_id": "5d9a2c511c9d44000045a23e",
 			"name": "Baldur",
 			"playedGames": [
@@ -27,8 +26,7 @@
 			]
 		}
 	],
-	"PickupGames":
-	[
+	"PickupGames": [
 		{
 			"start": "2015-09-09T00:25:43.311Z",
 			"end": "2015-09-09T02:25:43.311Z",

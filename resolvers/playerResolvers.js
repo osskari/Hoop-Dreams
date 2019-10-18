@@ -8,27 +8,16 @@ const allPlayers = Player.find({}, (err, players) => {
 })
 module.exports = {
     queries: {
-        allPlayers: (root, args, context, info) => context.db.Player.find({}, (err, players) => {
-            if (err) { throw new Error(err); }
-            return players;
-        }),
-        player: async (root, args, context, info) => {
-            var error = false;
+        allPlayers: (root, args, context, info) => context.services.playerService.findPlayers({}).then(players => players).catch(err => new Error(err)),
+        player: (root, args, context, info) => {
             //Checking if its a valid mongoDB id
             if (mongodb.ObjectID.isValid(args.id)) {
-                const playerFound = await context.db.Player.findById({ _id: args.id }, (err, player) => {
-                    if (player == null || err != null) {
-                        //If player is not found set error to true, and return a NotFoundError()
-                        error = true;
+                return context.services.playerService.findPlayers({ "_id": args.id }).then(player => {
+                    if (player == []) {
+                        return new NotFoundError();
                     }
+                    return player[0];
                 });
-                if (error) {
-                    //If error has been set, return NotFoundError
-                    return new NotFoundError();
-                } else {
-                    //If error var was not set, return the found player
-                    return playerFound;
-                }
             } else {
                 //Return InvalidObjectIdError if the given id is not valid
                 return new InvalidObjectIdError();
@@ -37,28 +26,34 @@ module.exports = {
     },
     mutations: {
         createPlayer: (parent, args, context, info) => {
-            return Player.create({
+            return context.db.Player.create({
                 name: args.input.name
             }).then(data => data).catch(err => err);
         },
         updatePlayer: (parent, args, context, info) => {
-            return Player.update(
+            return context.db.Player.update(
                 { "_id": args.id },
                 { name: args.input.name }
-            ).then(() => Player.findById(args.id).then(data => data).catch(err => err)).catch(err => err);
+            ).then(() =>
+                context.services.playerService.findPlayers({ "_id": args.id })
+                    .then(data => {
+                        if (data == []) { return new NotFoundError(); }
+                        return data[0]
+                    }).catch(err => err))
+                .catch(err => err);
         },
         removePlayer: (parent, args, context, info) => {
             if (!mongodb.ObjectID.isValid(args.id)) {
                 return new InvalidObjectIdError();
             }
             //If player is found do stuff, else return NotFoundError
-            if (Player.findById(args.id).then(data => { (data == null) ? false : true }).catch(err => false)) {
+            if (context.services.playerService.findPlayers({ "_id": args.id }).then(data => { (data[0] == null) ? false : true }).catch(err => false)) {
                 Player.updateOne(
                     { "_id": args.id },
                     { deleted: true }
                 ).then(data => data).catch(err => err);
                 //Arrya of all games that this person is a host of
-                return PickupGame.find({}).then(games => {
+                return context.services.pickupGameService.findPickupGames({}).then(games => {
                     pg = games.filter(g => g.host == args.id)
                     if (pg.length == 0) {
                         //If he is not a host of any game, return true;
@@ -98,9 +93,10 @@ module.exports = {
                 var ping = [];
                 return PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
                     if (err) { return new Error(); }
-                    connection.map(c => PickupGame.findById(c.pickupGameId, (err, pickupGame) => {
+                    connection.map(c => context.services.pickupGameService.findPickupGames({ "_id": c.pickupGameId }).then(pickupGame => {
                         if (err) { return new Error(); }
-                        ping.push(pickupGame);
+                        if (pickupGame == []) { return; }
+                        ping.push(pickupGame[0]);
                     }));
                     return ping;
                 });
