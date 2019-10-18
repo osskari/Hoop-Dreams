@@ -1,5 +1,3 @@
-const Moment = require('moment');
-
 module.exports = {
     queries: {
         allBasketballFields: async (root, args, context) => {
@@ -8,18 +6,7 @@ module.exports = {
                 (err) => {
                     console.log(err)
                 }
-            ).then(data => {
-                data.forEach(i => {
-                    arr.push({
-                        id: i.id,
-                        name: i.name,
-                        capacity: i.capacity,
-                        yearOfCreation: i.yearOfCreation,
-                        pickupGames: [],
-                        status: i.status
-                    });
-                });
-            });
+            ).then(data => { arr = data; });
             return arr;
         },
         basketballField: async (root, args, context) => {
@@ -28,6 +15,17 @@ module.exports = {
                 (err) => { console.log(err); }
             ).then( data => { field = data; });
             return field;
+        }
+    },
+    types: {
+        BasketballField: {
+            pickupGames(root, args, context, info) {
+                console.log("id", root.id);
+                return context.db.PickupGame.find({location: root.id}, (err, games) => {
+                    if (err) { console.log(err); }
+                    return games;
+                });
+            }
         }
     }
 }
