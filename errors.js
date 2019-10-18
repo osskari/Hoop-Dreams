@@ -47,6 +47,14 @@ class InvalidObjectIdError extends ApolloError {
         this.code = 400;
     }
 }
+      
+class PlayerAlreadyRegistered extends ApolloError {
+    constructor(message = 'Player id already registered for specified game') {
+        super(null, null, message);
+        this.name = 'PlayerAlreadyRegistered';
+        this.code = 400;
+    }
+}
 
 module.exports = {
     PickupGameExceedMaximumError,
@@ -55,5 +63,6 @@ module.exports = {
     PickupGameAlreadyPassedError,
     NotFoundError,
     UserInputError,
-    InvalidObjectIdError
+    InvalidObjectIdError,
+    PlayerAlreadyRegistered
 };

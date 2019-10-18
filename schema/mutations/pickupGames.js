@@ -1,6 +1,6 @@
 module.exports = `
-    createPickupGame(pickupGame: PickupGameInput!): PickupGame!
-    removePickupGame(id: Int!): Boolean!
-    addPlayerToPickupGame(player: PlayerInput!): Player!
-    removePlayerFromPickupGame(id: Int!): Boolean!
+    createPickupGame(input: PickupGameInput!): PickupGame!
+    removePickupGame(id: String!): Boolean!
+    addPlayerToPickupGame(input: SignupPlayerInput!): PickupGame!
+    removePlayerFromPickupGame(input: SignupPlayerInput!): Boolean!
 `;

@@ -8,13 +8,16 @@ const allPlayers = Player.find({}, (err, players) => {
 })
 module.exports = {
     queries: {
-        allPlayers: () => allPlayers,
-        player: async (parent, args) => {
+        allPlayers: (root, args, context, info) => context.db.Player.find({}, (err, players) => {
+            if (err) { throw new Error(err); }
+            return players;
+        }),
+        player: async (root, args, context, info) => {
             var error = false;
             //Checking if its a valid mongoDB id
             if (mongodb.ObjectID.isValid(args.id)) {
-                const playerFound = await Player.findById({ _id: args.id }, (err, player) => {
-                    if (player == null) {
+                const playerFound = await context.db.Player.findById({ _id: args.id }, (err, player) => {
+                    if (player == null || err != null) {
                         //If player is not found set error to true, and return a NotFoundError()
                         error = true;
                     }
@@ -90,7 +93,7 @@ module.exports = {
     },
     types: {
         Player: {
-            playedGames: parent => {
+            playedGames: (root, args, context, info) => {
                 //ping = peopleInGame
                 var ping = [];
                 return PlayersInGame.find({ playerId: parent.id }, (err, connection) => {
