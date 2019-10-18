@@ -6,9 +6,9 @@ const moment = require('moment');
 module.exports = {
     queries: {
         // Returns all pickup games
-        allPickupGames: () => PickupGame.find({}).then(pickupGames => pickupGames).catch(err => err),
+        allPickupGames: (parent, args, context, info) => context.db.PickupGame.find({}).then(pickupGames => pickupGames).catch(err => err),
         // Returns a specific pickup game by id
-        pickupGame: (parent, input) => PickupGame.findById(input.id).then(pickupGame => pickupGame).catch(err => err)
+        pickupGame: (parent, input, context, info) => context.db.PickupGame.findById(input.id).then(pickupGame => pickupGame).catch(err => err)
     },
     mutations: {
         // Creates a pickup game and returns the created pickup game
