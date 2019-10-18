@@ -10,5 +10,6 @@ module.exports = {
     `,
     mongoDb: new Schema({
         name: { type: String, required: true },
+        deleted: { type: Boolean, default: false }
     })
 };
