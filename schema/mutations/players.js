@@ -1,5 +1,5 @@
 module.exports = `
-    createPlayer(player: PlayerInput!): Player!
-    updatePlayer(id: Int! player: PlayerInput!): Player!
-    removePlayer(id: Int!): Boolean!
+    createPlayer(input: PlayerInput!): Player!
+    updatePlayer(id: String! input: PlayerInput!): Player!
+    removePlayer(id: String!): Boolean!
 `;

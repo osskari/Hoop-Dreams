@@ -21,45 +21,43 @@ module.exports = {
             context.db.PlayersInGame.deleteMany({"pickupGameId": id}).then(() => true).catch(err => err)
         ).catch(err => err),
         // adds a new player to a specified pickup game
-        addPlayerToPickupGame: (parent, connection, context, info) => 
-            context.db.PickupGame.findById(connection.input.pickupGameId)
-                .then( pickupGame => {
-                    return context.db.Player.findById(connection.input.playerId)
-                    .then(player => {
-                        if(pickupGame.end > new moment()) {
-                            return new PickupGameAlreadyPassedError();
-                        }
-                        return context.services.getBasketballFieldById(pickupGame.location)
-                        .then(loc => {
-                            return context.db.PlayersInGame.find({'pickupGameId': connection.input.pickupGameId})
-                            .then(pingForGame => {
-                                if ( pingForGame.filter(ping => ping.playerId == player.id).length != 0 ) {
-                                    return new PlayerAlreadyRegistered();
-                                }
-                                if (loc.capacity == pingForGame.length) {
-                                    return new PickupGameAlreadyPassedError();
-                                }
-                                return context.db.PlayersInGame.find({'playerId': connection.input.playerId})
-                                .then(pingForPlayer => {
-                                    return context.db.PickupGame.find({})
-                                    .then(pickupGames => {
-                                        pgids = pingForGame.map(pingfg => pingfg.playerId);
-                                        pickupGames = pickupGames.filter(pg => pgids.includes(pg.id));
-                                        for(var i = 0; i < pickupGames.length; i++) {
-                                            if(pickupGame.start > pickupGames[i].start > pickupGame.end) {
-                                                return new PickupGameOverlapError();
-                                            }
-                                            if(pickupGames[i].start > pickupGame.start > pickupGames[i].end) {
-                                                return new PickupGameOverlapError();
-                                            }
+        addPlayerToPickupGame: (parent, connection, context, info) => {
+            return context.db.PickupGame.findById(connection.input.pickupGameId)
+            .then( pickupGame => {
+                return context.db.Player.findById(connection.input.playerId)
+                .then(player => {
+                    if(pickupGame.end > new moment()) {
+                        return new PickupGameAlreadyPassedError();
+                    }
+                    return context.services.getBasketballFieldById(pickupGame.location)
+                    .then(loc => {
+                        return context.db.PlayersInGame.find({'pickupGameId': connection.input.pickupGameId})
+                        .then(pingForGame => {
+                            if ( pingForGame.filter(ping => ping.playerId == player.id).length != 0 ) {
+                                return new PlayerAlreadyRegistered();
+                            }
+                            if (loc.capacity == pingForGame.length) {
+                                return new PickupGameAlreadyPassedError();
+                            }
+                            return context.db.PlayersInGame.find({'playerId': connection.input.playerId})
+                            .then(pingForPlayer => {
+                                return context.db.PickupGame.find({})
+                                .then(pickupGames => {
+                                    pgids = pingForGame.map(pingfg => pingfg.playerId);
+                                    pickupGames = pickupGames.filter(pg => pgids.includes(pg.id));
+                                    for(var i = 0; i < pickupGames.length; i++) {
+                                        if(pickupGame.start > pickupGames[i].start > pickupGame.end) {
+                                            return new PickupGameOverlapError();
                                         }
-                                        return context.db.PlayersInGame.create({
-                                            'playerId': connection.input.playerId,
-                                            'pickupGameId': connection.input.pickupGameId
-                                        })
-                                        .then(() => pickupGame)
-                                        .catch(err => err);
+                                        if(pickupGames[i].start > pickupGame.start > pickupGames[i].end) {
+                                            return new PickupGameOverlapError();
+                                        }
+                                    }
+                                    return context.db.PlayersInGame.create({
+                                        'playerId': connection.input.playerId,
+                                        'pickupGameId': connection.input.pickupGameId
                                     })
+                                    .then(() => pickupGame)
                                     .catch(err => err);
                                 })
                                 .catch(err => err);
@@ -70,7 +68,10 @@ module.exports = {
                     })
                     .catch(err => err);
                 })
-                .catch(err => err),
+                .catch(err => err);
+            })
+            .catch(err => err);
+        },
         // Removes a player connection to a pickup game
         removePlayerFromPickupGame: (parent, connection, context, info) => context.db.PickupGame.findById(connection.input.pickupGameId).then( pickupGame =>
             context.db.PlayersInGame.deleteOne({
@@ -81,6 +82,7 @@ module.exports = {
         ).catch(err => err)
     },
     types: {
+
         PickupGame : {
             // going through all players in game and returning them as an list
             registeredPlayers: (root, args, context, info) => context.db.PlayersInGame.find({'pickupGameId': root.id})
